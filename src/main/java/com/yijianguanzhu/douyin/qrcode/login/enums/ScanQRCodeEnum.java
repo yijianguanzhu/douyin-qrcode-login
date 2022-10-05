@@ -10,11 +10,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ScanQRCodeEnum implements BaseCodeEnum {
 
-	SUCCEEDED(0, "客户端确认登录"),
-
 	WAITING(1, "客户端未扫码"),
 
 	PENDING(2, "客户端已扫码，等待确认"),
+
+	SUCCEEDED(3, "客户端确认登录"),
 
 	CANCELED(4, "客户端取消登录"),
 

@@ -16,6 +16,7 @@ public class CookieUtil {
 
 	public final static String EQUAL_SIGN = "=";
 	public final static String SEMICOLON = ";";
+	public final static String AMPERSAND = "&";
 	public final static String SET_COOKIE = "Set-Cookie";
 
 	// Response to Map
