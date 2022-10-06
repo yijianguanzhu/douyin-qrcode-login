@@ -5,6 +5,7 @@ import okhttp3.Response;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -18,11 +19,23 @@ public class CookieUtil {
 	public final static String SEMICOLON = ";";
 	public final static String AMPERSAND = "&";
 	public final static String SET_COOKIE = "Set-Cookie";
+	public final static String COOKIE = "Cookie";
 
 	// Response to Map
 	public static Map<String, String> cookies( Response response ) {
+		List<String> cookies = response.headers( SET_COOKIE );
+		Response priorResponse = response.priorResponse();
+		if ( Objects.nonNull( priorResponse ) ) {
+			Map<String, String> oldCookies = cookies( cookies );
+			Map<String, String> newCookies = cookies( priorResponse.headers( SET_COOKIE ) );
+			fillCookies( oldCookies, newCookies );
+			return newCookies;
+		}
+		return cookies( cookies );
+	}
+
+	protected static Map<String, String> cookies( List<String> headers ) {
 		final Map<String, String> cookies = new LinkedHashMap<>();
-		List<String> headers = response.headers( SET_COOKIE );
 		headers.stream().flatMap( header -> Stream.of( header.split( SEMICOLON ) ) )
 				.filter( header -> header.contains( EQUAL_SIGN ) )
 				.map( header -> header.split( EQUAL_SIGN ) )

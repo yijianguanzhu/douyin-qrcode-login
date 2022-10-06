@@ -47,7 +47,7 @@ public class DefaultWaitScanQRCodeRunnable implements Runnable {
 	public void run() {
 		ResponseEntity<SuccessScanQRCodeEntity> entity = null;
 		Request request = new Request.Builder()
-				.url( url ).get().header( "Cookie", ttwId ).build();
+				.url( url ).get().header( CookieUtil.COOKIE, ttwId ).build();
 		try ( Response response = HttpUtil.CLIENT.newCall( request ).execute() ) {
 			entity = JacksonUtil.bean( response.body().string(),
 					new TypeReference<ResponseEntity<SuccessScanQRCodeEntity>>() {

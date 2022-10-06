@@ -58,7 +58,7 @@ public class LoginHelper {
 
 	protected static Map<String, String> cookies( SuccessScanQRCodeEntity succ ) {
 		Request request = new Request.Builder().url( succ.getUrl() ).get()
-				.header( "Cookie", CookieUtil.cookies( succ.getCookies() ) ).build();
+				.header( CookieUtil.COOKIE, CookieUtil.cookies( succ.getCookies() ) ).build();
 		try ( Response response = HttpUtil.CLIENT.newCall( request ).execute() ) {
 			Map<String, String> cookies = CookieUtil.cookies( response );
 			CookieUtil.fillCookies( succ.getCookies(), cookies );

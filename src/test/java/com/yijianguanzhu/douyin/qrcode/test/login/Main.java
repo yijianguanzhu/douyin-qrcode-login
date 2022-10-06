@@ -1,7 +1,8 @@
-package com.yijianguanzhu.douyin.qrcode.login.utils;
+package com.yijianguanzhu.douyin.qrcode.test.login;
 
 import com.yijianguanzhu.douyin.qrcode.login.core.LoginHelper;
 import com.yijianguanzhu.douyin.qrcode.login.core.entity.QrCodeEntity;
+import com.yijianguanzhu.douyin.qrcode.login.utils.CookieUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
