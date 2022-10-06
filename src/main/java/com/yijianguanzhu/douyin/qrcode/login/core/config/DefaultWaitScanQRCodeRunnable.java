@@ -9,12 +9,13 @@ import com.yijianguanzhu.douyin.qrcode.login.exception.QRCodeLoginFailedExceptio
 import com.yijianguanzhu.douyin.qrcode.login.exception.QRCodeTimeoutException;
 import com.yijianguanzhu.douyin.qrcode.login.utils.CookieUtil;
 import com.yijianguanzhu.douyin.qrcode.login.utils.HttpUtil;
-import com.yijianguanzhu.douyin.qrcode.login.utils.JacksonUtil;
+import com.yijianguanzhu.douyin.qrcode.login.utils.ResponseUtil;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Request;
 import okhttp3.Response;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,13 +46,12 @@ public class DefaultWaitScanQRCodeRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		ResponseEntity<SuccessScanQRCodeEntity> entity = null;
-		Request request = new Request.Builder()
-				.url( url ).get().header( CookieUtil.COOKIE, ttwId ).build();
-		try ( Response response = HttpUtil.CLIENT.newCall( request ).execute() ) {
-			entity = JacksonUtil.bean( response.body().string(),
-					new TypeReference<ResponseEntity<SuccessScanQRCodeEntity>>() {
-					} );
+		ResponseEntity<SuccessScanQRCodeEntity> entity;
+		Map<String, String> headers = new LinkedHashMap<>();
+		headers.put( CookieUtil.COOKIE, ttwId );
+		try ( Response response = HttpUtil.get( url, headers ) ) {
+			entity = ResponseUtil.bean( response, new TypeReference<ResponseEntity<SuccessScanQRCodeEntity>>() {
+			} );
 			entity.getData().setCookies( CookieUtil.cookies( response ) );
 		}
 		catch ( Exception e ) {

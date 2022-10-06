@@ -1,6 +1,5 @@
 package com.yijianguanzhu.douyin.qrcode.login.utils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.yijianguanzhu.douyin.qrcode.login.exception.HttpRequestException;
 import com.yijianguanzhu.douyin.qrcode.login.interceptor.BasicCommonHeadersInterceptor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,52 +24,24 @@ public class HttpUtil {
 			.addInterceptor( new BasicCommonHeadersInterceptor() )
 			.build();
 
-	public static <T> T get( String url, Class<T> clazz ) {
-		return get( url, null, clazz );
+	public static Response get( String url ) {
+		return get( url, null );
 	}
 
-	public static <T> T get( String url, Map<String, String> headers, Class<T> clazz ) {
-		String response = get( url, headers );
-		return JacksonUtil.bean( response, clazz );
-	}
-
-	public static <T> T get( String url, TypeReference<T> valueTypeRef ) {
-		return get( url, null, valueTypeRef );
-	}
-
-	public static <T> T get( String url, Map<String, String> headers, TypeReference<T> valueTypeRef ) {
-		String response = get( url, headers );
-		return JacksonUtil.bean( response, valueTypeRef );
-	}
-
-	protected static String get( String url, Map<String, String> headers ) {
+	public static Response get( String url, Map<String, String> headers ) {
 		Request.Builder builder = new Request.Builder();
 		if ( headers != null && !headers.isEmpty() ) {
 			headers.forEach( builder::addHeader );
 		}
 		Request request = builder.url( url ).get().build();
-		return body( request );
+		return response( request );
 	}
 
-	public static <T, R> T post( String url, R body, Class<T> clazz ) {
-		return post( url, null, body, clazz );
+	public static <R> Response post( String url, R body ) {
+		return post( url, null, body );
 	}
 
-	public static <T, R> T post( String url, Map<String, String> headers, R body, Class<T> clazz ) {
-		String response = post( url, headers, body );
-		return JacksonUtil.bean( response, clazz );
-	}
-
-	public static <T, R> T post( String url, R body, TypeReference<T> valueTypeRef ) {
-		return post( url, null, body, valueTypeRef );
-	}
-
-	public static <T, R> T post( String url, Map<String, String> headers, R body, TypeReference<T> valueTypeRef ) {
-		String response = post( url, headers, body );
-		return JacksonUtil.bean( response, valueTypeRef );
-	}
-
-	protected static <R> String post( String url, Map<String, String> headers, R body ) {
+	public static <R> Response post( String url, Map<String, String> headers, R body ) {
 		String json = JacksonUtil.json( body );
 		RequestBody requestBody = RequestBody.create( JSON, json );
 		Request.Builder builder = new Request.Builder();
@@ -78,13 +49,14 @@ public class HttpUtil {
 			headers.forEach( builder::addHeader );
 		}
 		Request request = builder.url( url ).post( requestBody ).build();
-		return body( request );
+		return response( request );
 	}
 
-	protected static String body( Request request ) {
-		try ( Response response = CLIENT.newCall( request ).execute() ) {
+	protected static Response response( Request request ) {
+		try {
+			Response response = CLIENT.newCall( request ).execute();
 			if ( response.isSuccessful() ) {
-				return response.body().string();
+				return response;
 			}
 		}
 		catch ( Exception e ) {
