@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.yijianguanzhu.douyin.qrcode.login.core.config.DefaultWaitScanQRCodeRunnable;
 import com.yijianguanzhu.douyin.qrcode.login.core.entity.QrCodeEntity;
 import com.yijianguanzhu.douyin.qrcode.login.core.entity.ResponseEntity;
-import com.yijianguanzhu.douyin.qrcode.login.core.entity.SuccessScanQRCodeEntity;
+import com.yijianguanzhu.douyin.qrcode.login.core.entity.ScanQRCodeEntity;
 import com.yijianguanzhu.douyin.qrcode.login.exception.BaseException;
 import com.yijianguanzhu.douyin.qrcode.login.exception.QRCodeLoginFailedException;
 import com.yijianguanzhu.douyin.qrcode.login.utils.CookieUtil;
@@ -36,8 +36,8 @@ public class LoginHelper {
 	 * 1. 主线程把等待扫码结果任务交给其他线程工作 2. 扫码成功后，主线程真正去获取cookie
 	 */
 	public static Map<String, String> login( String token ) {
-		CompletableFuture<SuccessScanQRCodeEntity> future = waitingScanQRCode( token );
-		SuccessScanQRCodeEntity succ;
+		CompletableFuture<ScanQRCodeEntity> future = waitingScanQRCode( token );
+		ScanQRCodeEntity succ;
 		try {
 			succ = future.get();
 		}
@@ -50,14 +50,14 @@ public class LoginHelper {
 		return cookies( succ );
 	}
 
-	protected static CompletableFuture<SuccessScanQRCodeEntity> waitingScanQRCode( String token ) {
-		final CompletableFuture<SuccessScanQRCodeEntity> future = new CompletableFuture<>();
+	protected static CompletableFuture<ScanQRCodeEntity> waitingScanQRCode( String token ) {
+		final CompletableFuture<ScanQRCodeEntity> future = new CompletableFuture<>();
 		final DefaultWaitScanQRCodeRunnable runnable = new DefaultWaitScanQRCodeRunnable( future, token );
 		runnable.schedule();
 		return future;
 	}
 
-	protected static Map<String, String> cookies( SuccessScanQRCodeEntity succ ) {
+	protected static Map<String, String> cookies( ScanQRCodeEntity succ ) {
 		Map<String, String> headers = new LinkedHashMap<>();
 		headers.put( CookieUtil.COOKIE, CookieUtil.cookies( succ.getCookies() ) );
 		try ( Response response = HttpUtil.get( succ.getUrl(), headers ) ) {

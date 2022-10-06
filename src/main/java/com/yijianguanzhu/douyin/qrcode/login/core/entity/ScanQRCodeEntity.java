@@ -14,7 +14,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-public class SuccessScanQRCodeEntity extends BaseEntity {
+public class ScanQRCodeEntity extends BaseEntity {
 
 	// 扫码状态
 	private ScanQRCodeEnum status;

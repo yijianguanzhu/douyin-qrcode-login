@@ -2,7 +2,7 @@ package com.yijianguanzhu.douyin.qrcode.login.core.config;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.yijianguanzhu.douyin.qrcode.login.core.entity.ResponseEntity;
-import com.yijianguanzhu.douyin.qrcode.login.core.entity.SuccessScanQRCodeEntity;
+import com.yijianguanzhu.douyin.qrcode.login.core.entity.ScanQRCodeEntity;
 import com.yijianguanzhu.douyin.qrcode.login.enums.ScanQRCodeEnum;
 import com.yijianguanzhu.douyin.qrcode.login.exception.QRCodeAbortLoginException;
 import com.yijianguanzhu.douyin.qrcode.login.exception.QRCodeLoginFailedException;
@@ -29,7 +29,7 @@ public class DefaultWaitScanQRCodeRunnable implements Runnable {
 	final static ScheduledExecutorService EXECUTOR_SERVICE = new ScheduledThreadPoolExecutor( 1,
 			new ThreadFactory( "Waiting-Scan-QRCode" ), new ThreadPoolExecutor.CallerRunsPolicy() );
 
-	private CompletableFuture<SuccessScanQRCodeEntity> future;
+	private CompletableFuture<ScanQRCodeEntity> future;
 	private ScheduledFuture<?> schedule;
 	private String token;
 	private String url;
@@ -38,7 +38,7 @@ public class DefaultWaitScanQRCodeRunnable implements Runnable {
 	@Setter
 	private String realUrl = "https://www.douyin.com/passport/sso/login/callback/?next=https://www.douyin.com&ticket=";
 
-	public DefaultWaitScanQRCodeRunnable( CompletableFuture<SuccessScanQRCodeEntity> future, String token ) {
+	public DefaultWaitScanQRCodeRunnable( CompletableFuture<ScanQRCodeEntity> future, String token ) {
 		this.future = future;
 		this.token = token;
 		this.url = "https://sso.douyin.com/check_qrconnect/?token=" + token;
@@ -46,11 +46,11 @@ public class DefaultWaitScanQRCodeRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		ResponseEntity<SuccessScanQRCodeEntity> entity;
+		ResponseEntity<ScanQRCodeEntity> entity;
 		Map<String, String> headers = new LinkedHashMap<>();
 		headers.put( CookieUtil.COOKIE, ttwId );
 		try ( Response response = HttpUtil.get( url, headers ) ) {
-			entity = ResponseUtil.bean( response, new TypeReference<ResponseEntity<SuccessScanQRCodeEntity>>() {
+			entity = ResponseUtil.bean( response, new TypeReference<ResponseEntity<ScanQRCodeEntity>>() {
 			} );
 			entity.getData().setCookies( CookieUtil.cookies( response ) );
 		}
@@ -60,7 +60,7 @@ public class DefaultWaitScanQRCodeRunnable implements Runnable {
 			return;
 		}
 
-		SuccessScanQRCodeEntity data = entity.getData();
+		ScanQRCodeEntity data = entity.getData();
 
 		// 未知异常
 		if ( data.getErrorCode() != 0 ) {
