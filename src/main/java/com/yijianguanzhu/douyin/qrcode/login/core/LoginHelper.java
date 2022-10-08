@@ -16,6 +16,7 @@ import okhttp3.Response;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author yijianguanzhu 2022年10月04日
@@ -41,11 +42,14 @@ public class LoginHelper {
 		try {
 			succ = future.get();
 		}
-		catch ( BaseException e ) {
-			throw e;
+		catch ( ExecutionException e ) {
+			if ( e.getCause() != null && e.getCause() instanceof BaseException ) {
+				throw ( BaseException ) e.getCause();
+			}
+			throw new QRCodeLoginFailedException( e );
 		}
 		catch ( Exception e ) {
-			throw new RuntimeException( e );
+			throw new QRCodeLoginFailedException( e );
 		}
 		return cookies( succ );
 	}
